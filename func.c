@@ -2,13 +2,12 @@
 ** EPITECH PROJECT, 2024
 ** my_chocolatine
 ** File description:
-** main.c
+** func.c
 */
 
 #include "my.h"
 
-int main(void)
+void test_function(void)
 {
-    test_function();
-    return 0;
+    printf("Hello, World!\n");
 }

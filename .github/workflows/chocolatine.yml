@@ -77,7 +77,7 @@ jobs:
         run: make fclean
 
   run_tests:
-    needs: [ check_program_compilation ]
+    needs: [ check_program_compilation, check_coding_style ]
     runs-on: ubuntu-latest
     container:
       image: epitechcontent/epitest-docker:latest
