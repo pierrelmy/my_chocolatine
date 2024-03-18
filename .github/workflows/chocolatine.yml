@@ -1,0 +1,74 @@
+name: Chocolatine
+
+on:
+    push:
+        branches-ignore:
+            - 'ga-ignore-*'
+    pull_request:
+        branches-ignore:
+            - 'ga-ignore-*'
+
+env:
+    MIRROR_URL: "git@github.com:EpitechPromo2028/B-DOP-200-MPL-2-1-chocolatine-pierre.lamey.git"
+    EXECUTABLES: ""
+
+jobs:
+
+    check_coding_style:
+        runs-on: ubuntu-latest
+        container:
+            image: epitechcontent/epitest-docker:latest
+        steps:
+          - uses: actions/checkout@v4
+            with:
+              fetch-depth: 0
+          - name: Generate .log file
+            run: check.sh $(pwd) $(pwd)
+          - name: Check for coding style errors in .log file
+            run: |
+                if [ -s coding-style-report.log ]; then
+                while IFS= read -r line
+                do
+                    FILE=$(echo $line | cut -d':' -f1)
+                    LINE=$(echo $line | cut -d':' -f2)
+                    MSG=$(echo $line | cut -d':' -f3-)
+                    echo "::error file=$FILE,line=$LINE::$MSG"
+                    done < coding-style-report.log
+                    exit 1
+                fi
+
+    check_program_compilation:
+        needs: check_coding_style
+        runs-on: ubuntu-latest
+        container:
+            image: epitechcontent/epitest-docker:latest
+        steps:
+          - uses: actions/checkout@v4
+            with:
+              fetch-depth: 0
+          - name: Compile program
+            run: make
+            timeout-minutes: 2
+          - name: Clean up
+            run: make clean
+          - name: Check executables
+            run: |
+                for exe in ${{ env.EXECUTABLES }}; do
+                    if [ ! -x "$exe" ]; then
+                        echo "::error::$exe does not exist or is not executable"
+                        exit 1
+                    fi
+                done
+
+    mirror:
+        needs: check_program_compilation
+        runs-on: ubuntu-latest
+        if: github.repository != 'B-DOP-200-MPL-2-1-chocolatine-pierre.lamey.git'
+        steps:
+          - uses: actions/checkout@v4
+            with:
+              fetch-depth: 0
+          - uses: pixta-dev/repository-mirroring-action@v1
+            with:
+              target_repo_url: ${{ env.MIRROR_URL }}
+              ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
