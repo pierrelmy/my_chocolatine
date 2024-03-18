@@ -7,7 +7,7 @@
 
 CFLAGS = -W -Wall -Wextra -Werror
 
-SRC :=  $(shell find . -name '*.c')
+SRC :=  $(shell find -name "*.c")
 
 OBJ = $(SRC:.c=.o)
 
