@@ -11,11 +11,11 @@ while IFS= read -r line; do
 
     # Display the formatted message
     echo "::error $importance coding style error: $file:$line_num::$code"
-done < "coding-style-report.log"
+done < "coding-style-reports.log"
 
 
 
-if [ -s coding-style-report.log ]; then
+if [ -s coding-style-reports.log ]; then
                 while IFS= read -r line
                 do
                     FILE=$(echo $line | cut -d':' -f1)
