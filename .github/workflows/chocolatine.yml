@@ -1,87 +1,88 @@
 name: Chocolatine
 
 on:
-    push:
-        branches-ignore:
-            - 'ga-ignore-*'
-    pull_request:
-        branches-ignore:
-            - 'ga-ignore-*'
+  push:
+      branches-ignore:
+          - 'ga-ignore-*'
+  pull_request:
+      branches-ignore:
+          - 'ga-ignore-*'
 
 env:
-    MIRROR_URL: "git@github.com:EpitechPromo2028/B-DOP-200-MPL-2-1-chocolatine-pierre.lamey.git"
-    EXECUTABLES: "execute"
+  MIRROR_URL: "git@github.com:EpitechPromo2028/B-DOP-200-MPL-2-1-chocolatine-pierre.lamey.git"
+  EXECUTABLES: "execute"
 
 jobs:
 
-    check_coding_style:
-        runs-on: ubuntu-latest
-        container:
-            image: ghcr.io/epitech/coding-style-checker:latest
-        steps:
-          - uses: actions/checkout@v4
-            with:
-              fetch-depth: 0
-          - name: Generate .log file
-            run: |
-              check.sh $(pwd) $(pwd)
-              if [ ! -f "coding-style-reports.log" ]; then
-                echo "Error: File 'coding-style-report.log' not found!"
-                exit 84
-              fi
-          - name: Check for coding style errors in .log file
-            run: |
-              x=0
-              while IFS= read -r line; do
-                  file=$(echo "$line" | cut -d':' -f1)
-                  line_num=$(echo "$line" | cut -d':' -f2)
-                  importance=$(echo "$line" | cut -d':' -f3)
-                  code=$(echo "$line" | cut -d':' -f4-)
-                  ((x++))
-                  echo "::error $importance coding style error: $file:$line_num::$code"
-              done < "coding-style-reports.log"
-              rm -f coding-style-reports.log
-          - name: Exit if coding style errors has been found
-            run: |
-              if [ $x -gt 0 ]; then
-                echo "Error: $x coding style errors found!"
-                exit 84
-              fi
+  check_coding_style:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/epitech/coding-style-checker:latest
+    env:
+      x: 0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate .log file
+        run: |
+          check.sh $(pwd) $(pwd)
+          if [ ! -f "coding-style-reports.log" ]; then
+            echo "Error: File 'coding-style-report.log' not found!"
+            exit 84
+          fi
+      - name: Check for coding style errors in .log file
+        run: |
+          while IFS= read -r line; do
+              file=$(echo "$line" | cut -d':' -f1)
+              line_num=$(echo "$line" | cut -d':' -f2)
+              importance=$(echo "$line" | cut -d':' -f3)
+              code=$(echo "$line" | cut -d':' -f4-)
+              echo "::error $importance coding style error: $file:$line_num::$code"
+              x=$((x + 1))  # Increment counter
+          done < "coding-style-reports.log"
+          rm -f coding-style-reports.log
+      - name: Exit if coding style errors have been found
+        run: |
+          if [ $x -gt 0 ]; then
+            echo "Error: $x coding style errors found!"
+            exit 84
+          fi
 
-    check_program_compilation:
-        needs: check_coding_style
-        runs-on: ubuntu-latest
-        container:
-            image: epitechcontent/epitest-docker:latest
-        steps:
-          - uses: actions/checkout@v4
-            with:
-              fetch-depth: 0
-          - name: Compile program
-            run: make
-            timeout-minutes: 2
-          - name: Clean up
-            run: make clean
-          - name: Check executables
-            run: |
-                for exec in ${{ env.EXECUTABLES }}; do
-                    if [ ! -x "$exec" ]; then
-                        echo "::error::$exec does not exist or is not executable"
-                        exit 84
-                    fi
-                done
-          - name: Delete executables
-            run: make fclean
-
-    mirror:
-        needs: check_program_compilation
-        runs-on: ubuntu-latest
-        if: github.repository != 'B-DOP-200-MPL-2-1-chocolatine-pierre.lamey.git'
-        steps:
-          - uses: actions/checkout@v4
-            with:
-              fetch-depth: 0
-          - uses: pixta-dev/repository-mirroring-action@v1
-            with:
-              target_repo_url: ${{ env.MIRROR_URL }}
-              ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+  check_program_compilation:
+      needs: check_coding_style
+      runs-on: ubuntu-latest
+      container:
+          image: epitechcontent/epitest-docker:latest
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - name: Compile program
+          run: make
+          timeout-minutes: 2
+        - name: Clean up
+          run: make clean
+        - name: Check executables
+          run: |
+              for exec in ${{ env.EXECUTABLES }}; do
+                  if [ ! -x "$exec" ]; then
+                      echo "::error::$exec does not exist or is not executable"
+                      exit 84
+                  fi
+              done
+        - name: Delete executables
+          run: make fclean
+  
+  mirror:
+      needs: check_program_compilation
+      runs-on: ubuntu-latest
+      if: github.repository != 'B-DOP-200-MPL-2-1-chocolatine-pierre.lamey.git'
+      steps:
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        - uses: pixta-dev/repository-mirroring-action@v1
+          with:
+            target_repo_url: ${{ env.MIRROR_URL }}
+            ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
