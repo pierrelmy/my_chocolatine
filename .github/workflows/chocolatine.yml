@@ -80,13 +80,12 @@ jobs:
       needs: check_program_compilation
       runs-on: ubuntu-latest
       steps:
-        - run: |
-            echo "---> ${{ github.repository }} <---"
+        - name: Remove .github directory
+          run: rm -rf .github
         - name: Check out repository
           uses: actions/checkout@v4
           with:
             fetch-depth: 0
-            exclude: '.github'
         - name: Mirror repository
           uses: pixta-dev/repository-mirroring-action@v1
           with:
