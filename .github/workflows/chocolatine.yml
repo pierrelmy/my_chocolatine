@@ -25,7 +25,6 @@ jobs:
           - name: Generate .log file
             run: |
               check.sh $(pwd) $(pwd)
-              ls -la
               if [ ! -f "coding-style-reports.log" ]; then
                 echo "Error: File 'coding-style-report.log' not found!"
                 exit 84
