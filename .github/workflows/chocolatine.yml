@@ -17,13 +17,13 @@ jobs:
     check_coding_style:
         runs-on: ubuntu-latest
         container:
-            image: epitechcontent/epitest-docker:latest
+            image: ghcr.io/epitech/coding-style-checker:latest
         steps:
           - uses: actions/checkout@v4
             with:
               fetch-depth: 0
           - name: Generate .log file
-            run: coding_style.sh $(pwd) $(pwd)
+            run: check.sh $(pwd) $(pwd)
           - name: Check for coding style errors in .log file
             run: |
                 if [ -s coding-style-report.log ]; then
