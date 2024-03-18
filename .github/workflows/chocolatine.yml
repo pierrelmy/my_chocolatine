@@ -23,13 +23,15 @@ jobs:
             with:
               fetch-depth: 0
           - name: Generate .log file
-            run: check.sh $(pwd) $(pwd)
-          - name: Check for coding style errors in .log file
             run: |
+              check.sh $(pwd) $(pwd)
+              ls -la
               if [ ! -f "coding-style-report.log" ]; then
                 echo "Error: File 'coding-style-report.log' not found!"
                 exit 1
               fi
+          - name: Check for coding style errors in .log file
+            run: |
               while IFS= read -r line; do
                   file=$(echo "$line" | cut -d':' -f1)
                   line_num=$(echo "$line" | cut -d':' -f2)
@@ -38,7 +40,7 @@ jobs:
               
                   # Display the formatted message
                   echo "::error $importance coding style error: $file:$line_num::$code"
-              done < "$1"
+              done < "coding-style-report.log"
               rm -f coding-style-report.log
 
     check_program_compilation:
