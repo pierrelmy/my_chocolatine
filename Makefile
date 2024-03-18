@@ -19,7 +19,7 @@ $(NAME): $(OBJ)
     $(CC) $(OBJ) -o $(NAME)
 
 debug:
-	$(CC) $(OBJ) -o $(NAME) -g3
+	$(CC) $(OBJ) -o $(NAME)
 
 clean:
     $(RM) $(OBJ)
