@@ -40,12 +40,9 @@ jobs:
               line_num=$(echo "$line" | cut -d':' -f2)
               importance=$(echo "$line" | cut -d':' -f3)
               code=$(echo "$line" | cut -d':' -f4-)
-              echo -e "::error file=$file,line=$line_num::${importance^^} coding style error: #$file#L$line_num\n$code"
+              echo -e "::error file=$file,line=$line_num::${importance^^} coding style error: $code"
               x=$((x + 1))
           done < "coding-style-reports.log"
-      - name: Exit if errors has been found
-        run: |
-          set -e
           if [ $x -gt 0 ]; then
             echo "Error: $x coding style errors found!"
             exit 84
