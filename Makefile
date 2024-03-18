@@ -9,7 +9,6 @@ CFLAGS  =   -W -Wall -Wextra -Werror
 
 CPPFLAGS  = -I./includes
 
-## all .c except the ones in the tests folder
 SRC := $(filter-out ./tests/%, $(shell find -name "*.c"))
 
 TEST_SRC := $(filter-out ./main.c, $(shell find -name "*.c"))
@@ -33,6 +32,9 @@ tests_run:
 
 clean:
 	$(RM) $(OBJ)
+	$(RM) $(TEST_OBJ)
+	$(RM) *.gcno
+	$(RM) *.gcda
 
 fclean: clean
 	$(RM) $(NAME)
