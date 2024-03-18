@@ -2,11 +2,11 @@ name: Chocolatine
 
 on:
   push:
-      branches-ignore:
-          - 'ga-ignore-*'
+    branches-ignore:
+      - 'ga-ignore-*'
   pull_request:
-      branches-ignore:
-          - 'ga-ignore-*'
+    branches-ignore:
+      - 'ga-ignore-*'
 
 env:
   MIRROR_URL: "git@github.com:EpitechPromo2028/B-DOP-200-MPL-2-1-chocolatine-pierre.lamey.git"
@@ -36,12 +36,12 @@ jobs:
       - name: Check for coding style errors in .log file
         run: |
           while IFS= read -r line; do
-              file=$(echo "$line" | cut -d':' -f1)
-              line_num=$(echo "$line" | cut -d':' -f2)
-              importance=$(echo "$line" | cut -d':' -f3)
-              code=$(echo "$line" | cut -d':' -f4-)
-              echo -e "::error file=$file,line=$line_num::${importance^^} coding style error: $code"
-              x=$((x + 1))
+            file=$(echo "$line" | cut -d':' -f1)
+            line_num=$(echo "$line" | cut -d':' -f2)
+            importance=$(echo "$line" | cut -d':' -f3)
+            code=$(echo "$line" | cut -d':' -f4-)
+            echo -e "::error file=$file,line=$line_num::${importance^^} coding style error: $code"
+            x=$((x + 1))
           done < "coding-style-reports.log"
           if [ $x -gt 0 ]; then
             echo "Error: $x coding style errors found!"
@@ -51,33 +51,49 @@ jobs:
         run: rm -f coding-style-reports.log
 
   check_program_compilation:
-      needs: check_coding_style
-      runs-on: ubuntu-latest
-      container:
-          image: epitechcontent/epitest-docker:latest
-      steps:
-        - name: Check out repository
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
-        - name: Compile program
-          run: make
-          timeout-minutes: 2
-        - name: Clean up
-          run: make clean
-        - name: Check executables
-          run: |
-              for exec in ${{ env.EXECUTABLES }}; do
-                  if [ ! -x "$exec" ]; then
-                      echo "::error::$exec does not exist or is not executable"
-                      exit 84
-                  fi
-              done
-        - name: Delete executables
-          run: make fclean
+    needs: [ check_coding_style ]
+    runs-on: ubuntu-latest
+    container:
+        image: epitechcontent/epitest-docker:latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Compile program
+        run: make
+        timeout-minutes: 2
+      - name: Clean up
+        run: make clean
+      - name: Check executables
+        run: |
+          for exec in ${{ env.EXECUTABLES }}; do
+            if [ ! -x "$exec" ]; then
+              echo "::error::$exec does not exist or is not executable"
+              exit 84
+            fi
+          done
+      - name: Delete executables
+        run: make fclean
+
+  run_tests:
+    needs: [ check_program_compilation ]
+    runs-on: ubuntu-latest
+    container:
+      image: epitechcontent/epitest-docker:latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run tests
+        run: make tests_run
+        timeout-minutes: 2
+      - name: Clean up
+        run: make clean
   
   mirror:
-      needs: [ check_program_compilation, check_coding_style ]
+      needs: [ check_program_compilation, check_coding_style, run_tests ]
       runs-on: ubuntu-latest
       steps:
         - name: Remove .github directory
