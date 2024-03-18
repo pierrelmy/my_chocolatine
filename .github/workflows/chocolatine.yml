@@ -31,7 +31,7 @@ jobs:
               fi
           - name: Check for coding style errors in .log file
             run: |
-              x = 0
+              x=0
               while IFS= read -r line; do
                   file=$(echo "$line" | cut -d':' -f1)
                   line_num=$(echo "$line" | cut -d':' -f2)
@@ -67,7 +67,7 @@ jobs:
                 for exec in ${{ env.EXECUTABLES }}; do
                     if [ ! -x "$exec" ]; then
                         echo "::error::$exec does not exist or is not executable"
-                        exit 1
+                        exit 84
                     fi
                 done
           - name: Delete executables
