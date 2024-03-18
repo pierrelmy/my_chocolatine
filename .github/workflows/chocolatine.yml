@@ -39,11 +39,9 @@ jobs:
               importance=$(echo "$line" | cut -d':' -f3)
               code=$(echo "$line" | cut -d':' -f4-)
               echo "::error $importance coding style error: $file:$line_num::$code"
-              x=$((x + 1))  # Increment counter
+              x=$((x + 1))
           done < "coding-style-reports.log"
           rm -f coding-style-reports.log
-      - name: Exit if coding style errors have been found
-        run: |
           if [ $x -gt 0 ]; then
             echo "Error: $x coding style errors found!"
             exit 84
