@@ -27,6 +27,8 @@ jobs:
       - name: Generate .log file
         run: |
           check.sh $(pwd) $(pwd)
+      - name: Check if .log file has been generated
+        run: |
           if [ ! -f "coding-style-reports.log" ]; then
             echo "Error: File 'coding-style-report.log' not found!"
             exit 84
@@ -38,23 +40,11 @@ jobs:
               line_num=$(echo "$line" | cut -d':' -f2)
               importance=$(echo "$line" | cut -d':' -f3)
               code=$(echo "$line" | cut -d':' -f4-)
-              #echo -e "::error file=$file,line=$line_num::${importance^^} coding style error: #$file#L$line_num\n$code"
-              
-              curl \
-                -X POST \
-                -H "Accept: application/vnd.github.v3+json" \
-                -H "Authorization: Bearer ${{ secrets.SSH_PRIVATE_KEY }}" \
-                "https://api.github.com/repos/${GITHUB_REPOSITORY}/check-runs/${GITHUB_RUN_ID}/annotations" \
-                -d '{
-                  "path": "'"$file"'",
-                  "start_line": '"$line_num"',
-                  "end_line": '"$line_num"',
-                  "annotation_level": "'"$importance"'",
-                  "message": "'"$code"'"
-                }'
-              
+              echo -e "::error file=$file,line=$line_num::${importance^^} coding style error: #$file#L$line_num\n$code"
               x=$((x + 1))
           done < "coding-style-reports.log"
+      - name: Exit if errors has been found
+        run: |
           if [ $x -gt 0 ]; then
             echo "Error: $x coding style errors found!"
             exit 84
@@ -68,7 +58,8 @@ jobs:
       container:
           image: epitechcontent/epitest-docker:latest
       steps:
-        - uses: actions/checkout@v4
+        - name: Check out repository
+          uses: actions/checkout@v4
           with:
             fetch-depth: 0
         - name: Compile program
