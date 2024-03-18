@@ -23,7 +23,7 @@ jobs:
             with:
               fetch-depth: 0
           - name: Generate .log file
-            run: check.sh $(pwd) $(pwd)
+            run: coding_style.sh $(pwd) $(pwd)
           - name: Check for coding style errors in .log file
             run: |
                 if [ -s coding-style-report.log ]; then
@@ -36,6 +36,7 @@ jobs:
                     done < coding-style-report.log
                     exit 1
                 fi
+                rm -f coding-style-report.log
 
     check_program_compilation:
         needs: check_coding_style
