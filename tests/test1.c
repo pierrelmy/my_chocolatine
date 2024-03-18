@@ -14,3 +14,10 @@ Test(test1, test1, .init = redirect_all_std)
     fflush(stdout);
     cr_assert_stdout_eq_str("Hello, World!\n");
 }
+
+Test(test2, test2, .init = redirect_all_std)
+{
+    printf("test\n");
+    fflush(stdout);
+    cr_assert_stdout_eq_str("test\n");
+}
