@@ -1,3 +1,10 @@
+/*
+** EPITECH PROJECT, 2024
+** my_chocolatine
+** File description:
+** main.c
+*/
+
 #include <stdio.h>
 
 int main(void)
