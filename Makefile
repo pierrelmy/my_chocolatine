@@ -5,26 +5,27 @@
 ## Makefile
 ##
 
-CFLAGS = -W -Wall -Wextra -Werror
+CFLAGS  =   -W -Wall -Wextra -Werror
 
 SRC :=  $(shell find -name "*.c")
 
-OBJ = $(SRC:.c=.o)
+OBJ =   $(SRC:.c=.o)
 
-NAME = execute
+NAME    =  execute
 
-all: $(NAME)
+all:	$(NAME)
 
-$(NAME): $(OBJ)
-    $(CC) $(OBJ) -o $(NAME)
+$(NAME):	$(OBJ)
+	$(CC) $(OBJ) -o $(NAME)
 
 debug:
 	$(CC) $(OBJ) -o $(NAME)
 
 clean:
-    $(RM) $(OBJ)
+	$(RM) $(OBJ)
 
 fclean: clean
-    $(RM) $(NAME)
+	$(RM) $(NAME)
 
-re: fclean all
+re:	fclean  all
+
