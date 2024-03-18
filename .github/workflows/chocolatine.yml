@@ -26,17 +26,20 @@ jobs:
             run: check.sh $(pwd) $(pwd)
           - name: Check for coding style errors in .log file
             run: |
-                if [ -s coding-style-report.log ]; then
-                while IFS= read -r line
-                do
-                    FILE=$(echo $line | cut -d':' -f1)
-                    LINE=$(echo $line | cut -d':' -f2)
-                    MSG=$(echo $line | cut -d':' -f3-)
-                    echo "::error file=$FILE,line=$LINE::$MSG"
-                    done < coding-style-report.log
-                    exit 1
-                fi
-                rm -f coding-style-report.log
+              if [ ! -f "coding-style-report.log" ]; then
+                echo "Error: File 'coding-style-report.log' not found!"
+                exit 1
+              fi
+              while IFS= read -r line; do
+                  file=$(echo "$line" | cut -d':' -f1)
+                  line_num=$(echo "$line" | cut -d':' -f2)
+                  importance=$(echo "$line" | cut -d':' -f3)
+                  code=$(echo "$line" | cut -d':' -f4-)
+              
+                  # Display the formatted message
+                  echo "::error $importance coding style error: $file:$line_num::$code"
+              done < "$1"
+              rm -f coding-style-report.log
 
     check_program_compilation:
         needs: check_coding_style
@@ -54,9 +57,9 @@ jobs:
             run: make clean
           - name: Check executables
             run: |
-                for exe in ${{ env.EXECUTABLES }}; do
-                    if [ ! -x "$exe" ]; then
-                        echo "::error::$exe does not exist or is not executable"
+                for exec in ${{ env.EXECUTABLES }}; do
+                    if [ ! -x "$exec" ]; then
+                        echo "::error::$exec does not exist or is not executable"
                         exit 1
                     fi
                 done
