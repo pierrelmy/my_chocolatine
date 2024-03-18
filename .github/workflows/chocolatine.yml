@@ -38,7 +38,7 @@ jobs:
               line_num=$(echo "$line" | cut -d':' -f2)
               importance=$(echo "$line" | cut -d':' -f3)
               code=$(echo "$line" | cut -d':' -f4-)
-              echo "::error $importance coding style error: $file:$line_num::$code"
+              echo "::error file=$file,line=$line_num::$importance coding style error: $file:$line_num::$code"
               x=$((x + 1))
           done < "coding-style-reports.log"
           rm -f coding-style-reports.log
