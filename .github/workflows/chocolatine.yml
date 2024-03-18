@@ -14,34 +14,6 @@ env:
 
 jobs:
 
-  stop_jobs_if_repo_name_matches:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Stop jobs if repo name matches
-        uses: actions/github-script@v5
-        with:
-          script: |
-            const repoName = context.repo.repo;
-            if (repoName === "B-DOP-200-MPL-2-1-chocolatine-pierre.lamey") {
-              const workflowRunId = context.runId;
-              const token = ${{ secrets.SSH_PRIVATE_KEY }};
-              const octokit = github.getOctokit(token);
-              const jobs = await octokit.actions.listJobsForWorkflowRun({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                run_id: workflowRunId,
-              });
-              for (const job of jobs.data.jobs) {
-                if (job.status !== "completed") {
-                  await octokit.actions.cancelJob({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    job_id: job.id,
-                  });
-                }
-              }
-            }
-
   check_coding_style:
     runs-on: ubuntu-latest
     container:
