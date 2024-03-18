@@ -45,6 +45,7 @@ jobs:
           done < "coding-style-reports.log"
       - name: Exit if errors has been found
         run: |
+          set -e
           if [ $x -gt 0 ]; then
             echo "Error: $x coding style errors found!"
             exit 84
