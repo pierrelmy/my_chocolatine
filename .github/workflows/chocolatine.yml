@@ -77,7 +77,7 @@ jobs:
           run: make fclean
   
   mirror:
-      needs: check_program_compilation
+      needs: [ check_program_compilation, check_coding_style ]
       runs-on: ubuntu-latest
       steps:
         - name: Remove .github directory
