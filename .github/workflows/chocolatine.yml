@@ -28,19 +28,26 @@ jobs:
               ls -la
               if [ ! -f "coding-style-reports.log" ]; then
                 echo "Error: File 'coding-style-report.log' not found!"
-                exit 1
+                exit 84
               fi
           - name: Check for coding style errors in .log file
             run: |
+              x = 0
               while IFS= read -r line; do
                   file=$(echo "$line" | cut -d':' -f1)
                   line_num=$(echo "$line" | cut -d':' -f2)
                   importance=$(echo "$line" | cut -d':' -f3)
                   code=$(echo "$line" | cut -d':' -f4-)
-              
+                  ((x++))
                   echo "::error $importance coding style error: $file:$line_num::$code"
               done < "coding-style-reports.log"
               rm -f coding-style-reports.log
+          - name: Exit if coding style errors has been found
+            run: |
+              if [ $x -gt 0 ]; then
+                echo "Error: $x coding style errors found!"
+                exit 84
+              fi
 
     check_program_compilation:
         needs: check_coding_style
