@@ -17,7 +17,7 @@ Test(test1, test1, .init = redirect_all_std)
 
 Test(test2, test2, .init = redirect_all_std)
 {
-    printf("test caca\n");
+    printf("test\n");
     fflush(stdout);
     cr_assert_stdout_eq_str("test\n");
 }
