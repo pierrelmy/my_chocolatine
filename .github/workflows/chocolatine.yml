@@ -15,6 +15,7 @@ env:
 jobs:
 
   check_coding_style:
+    if: ${{ github.repository_owner == 'pierrelmy' }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/epitech/coding-style-checker:latest
