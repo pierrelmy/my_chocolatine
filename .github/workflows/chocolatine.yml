@@ -105,3 +105,14 @@ jobs:
           with:
             target_repo_url: ${{ env.MIRROR_URL }}
             ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+  
+  notify:
+    needs: [ mirror ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send message to Discord
+        uses: Enichy/Send_Discord_Message_Action@v1.1.11
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          message: 'Repository has successfully been mirrored to ${{ env.MIRROR_URL }}.'
