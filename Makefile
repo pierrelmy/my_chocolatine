@@ -27,7 +27,7 @@ $(NAME):	$(OBJ)
 	$(CC) $(OBJ) -o $(NAME)
 
 tests_run:
-	$(CC) $(TEST_SRC) -o $(TEST_NAME) -lcriterion --coverage -I./includes
+	$(CC) $(TEST_SRC) -o $(TEST_NAME) -lcriterion --coverage
 	./$(TEST_NAME)
 
 clean:
