@@ -9,13 +9,13 @@ on:
       - 'ga-ignore-*'
 
 env:
-  MIRROR_URL: "git@github.com:EpitechPromo2028/B-DOP-200-MPL-2-1-chocolatine-pierre.lamey.git"
+  MIRROR_URL: ${{ vars.TARGET_URL }}
   EXECUTABLES: "execute"
 
 jobs:
 
   check_coding_style:
-    if: ${{ github.repository_owner == 'pierrelmy' }}
+    if: ${{ github.repository_owner ==  vars.USERNAME }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/epitech/coding-style-checker:latest
@@ -26,8 +26,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Generate .log file
-        run: |
-          check.sh $(pwd) $(pwd)
+        run: check.sh $(pwd) $(pwd)
       - name: Check if .log file has been generated
         run: |
           if [ ! -f "coding-style-reports.log" ]; then
@@ -97,8 +96,6 @@ jobs:
       needs: [ check_program_compilation, check_coding_style, run_tests ]
       runs-on: ubuntu-latest
       steps:
-        - name: Remove .github directory
-          run: rm -rf .github
         - name: Check out repository
           uses: actions/checkout@v4
           with:
