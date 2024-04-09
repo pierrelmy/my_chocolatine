@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2024
-** my_chocolatine
+** my_chocolatine 
 ** File description:
 ** func.c
 */
