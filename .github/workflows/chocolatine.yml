@@ -122,4 +122,4 @@ jobs:
             > branch: `${{ github.ref }}`
             > commit: [${{ github.sha }}](${{ github.event.repository.html_url }}/commit/${{ github.sha }})
             > commit message: `${{ github.event.head_commit.message }}`
-            > commit author: `${{ github.event.head_commit.author.name }}`
+            > commit author: [${{ github.event.head_commit.author.name }}](https://github.com/${{ github.event.head_commit.author.username }})
