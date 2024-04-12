@@ -115,7 +115,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           discord_webhook: ${{ secrets.DISCORD_WEBHOOK }}
           message: |
-            **Repository has successfully been mirrored !** 
+            ** Repository has successfully been mirrored ! ** 
             > source: `${{ github.repository }}`
             > destination: `${{ env.MIRROR_URL }}`
             > branch: `${{ github.ref }}`
