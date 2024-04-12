@@ -15,6 +15,7 @@ env:
 jobs:
 
   check_coding_style:
+    name: Check coding style
     if: ${{ github.repository_owner ==  vars.USERNAME }}
     runs-on: ubuntu-latest
     container:
@@ -23,8 +24,6 @@ jobs:
       x: 0
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Generate .log file
         run: check.sh $(pwd) $(pwd)
       - name: Check if .log file has been generated
@@ -51,6 +50,7 @@ jobs:
         run: rm -f coding-style-reports.log
 
   check_program_compilation:
+    name: Check program compilation
     needs: [ check_coding_style ]
     runs-on: ubuntu-latest
     container:
@@ -58,8 +58,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Compile program
         run: make
         timeout-minutes: 2
@@ -77,6 +75,7 @@ jobs:
         run: make fclean
 
   run_tests:
+    name: Run tests
     needs: [ check_program_compilation ]
     runs-on: ubuntu-latest
     container:
@@ -84,8 +83,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - name: Run tests
         run: make tests_run
         timeout-minutes: 2
@@ -93,20 +90,22 @@ jobs:
         run: make clean
   
   mirror:
-      needs: [ run_tests ]
-      runs-on: ubuntu-latest
-      steps:
-        - name: Check out repository
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
-        - name: Mirror repository
-          uses: pixta-dev/repository-mirroring-action@v1
-          with:
-            target_repo_url: ${{ env.MIRROR_URL }}
-            ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+    name: Mirror repository
+    needs: [ run_tests ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Mirror repository
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          target_repo_url: ${{ env.MIRROR_URL }}
+          ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
   
   notify:
+    name: Send a Discord message
     needs: [ mirror ]
     runs-on: ubuntu-latest
     steps:
